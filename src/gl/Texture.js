@@ -77,53 +77,7 @@ export default class Texture {
             return;
         }
 
-        this.url = url; // save URL reference (will be overwritten when element is loaded below)
-        this.source = this.url;
-        this.sourceType = 'url';
-
-        this.loading = new Promise((resolve, reject) => {
-            let ext = url.split('.').pop().toLowerCase();
-            let isVideo = (ext === 'ogv' || ext === 'webm' || ext === 'mp4');
-
-            let element = undefined
-            if (isVideo) {
-                element = document.createElement('video');
-                element.autoplay = true;
-                options.filtering = 'nearest';
-                // element.preload = 'auto';
-                // element.style.display = 'none';
-                // document.body.appendChild(element);
-            } else {
-                element = new Image();
-            }
-
-            element.onload = () => {
-                try {
-                    this.setElement(element, options);
-                }
-                catch (e) {
-                    console.log(`Texture '${this.name}': failed to load url: '${this.source}'`, e, options);
-                }
-                resolve(this);
-            };
-            element.onerror = e => {
-                // Warn and resolve on error
-                console.log(`Texture '${this.name}': failed to load url: '${this.source}'`, e, options);
-                resolve(this);
-            };
-
-            // Safari has a bug loading data-URL elements with CORS enabled, so it must be disabled in that case
-            // https://bugs.webkit.org/show_bug.cgi?id=123978
-            if (!(isSafari() && this.source.slice(0, 5) === 'data:')) {
-                element.crossOrigin = 'anonymous';
-            }
-
-            element.src = this.source;
-            if (isVideo) {
-                this.setElement(element, options);
-            }
-        });
-        return this.loading;
+        throw new Error('loading external urls not allowed');
     }
 
     // Sets texture to a raw image buffer

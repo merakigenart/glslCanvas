@@ -21,7 +21,6 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import xhr from 'xhr';
 import { createProgram, createShader, parseUniforms, setupWebGL } from './gl/gl';
 import Texture from './gl/Texture';
 import { isCanvasVisible, isDiff } from './tools/common';
@@ -108,9 +107,7 @@ void main(){
         }
         else if (canvas.hasAttribute('data-fragment-url')) {
             let source = canvas.getAttribute('data-fragment-url');
-            xhr.get(source, (error, response, body) => {
-                this.load(body, this.vertexString);
-            });
+            throw new Error('xhr Unsupported');
         }
 
         // Load shader
@@ -119,9 +116,7 @@ void main(){
         }
         else if (canvas.hasAttribute('data-vertex-url')) {
             let source = canvas.getAttribute('data-vertex-url');
-            xhr.get(source, (error, response, body) => {
-                this.load(this.fragmentString, body);
-            });
+            throw new Error('xhr Unsupported');
         }
 
         this.load();
@@ -700,7 +695,7 @@ void main(){
     }
 
     version() {
-        return '0.1.7';
+        return '0.1.8';
     }
 }
 

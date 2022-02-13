@@ -1,131 +1,8 @@
-import xhr from 'xhr';
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
 } : function (obj) {
   return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
 };
-
-
-
-
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-
-
-
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -150,46 +27,6 @@ var createClass = function () {
     return Constructor;
   };
 }();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 var toConsumableArray = function (arr) {
   if (Array.isArray(arr)) {
@@ -490,17 +327,6 @@ function isPowerOf2(value) {
     return (value & value - 1) === 0;
 }
 
-function isSafari() {
-    return (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-    );
-}
-
-
-
-
-
-
-
 function isDiff(a, b) {
     if (a && b) {
         return a.toString() !== b.toString();
@@ -645,6 +471,7 @@ function subscribeMixin$1(target) {
 }
 
 // Texture management
+
 // GL texture wrapper object for keeping track of a global set of textures, keyed by a unique user-defined name
 
 var Texture = function () {
@@ -729,60 +556,12 @@ var Texture = function () {
     }, {
         key: 'setUrl',
         value: function setUrl(url) {
-            var _this = this;
-
-            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
             if (!this.valid) {
                 return;
             }
 
-            this.url = url; // save URL reference (will be overwritten when element is loaded below)
-            this.source = this.url;
-            this.sourceType = 'url';
-
-            this.loading = new Promise(function (resolve, reject) {
-                var ext = url.split('.').pop().toLowerCase();
-                var isVideo = ext === 'ogv' || ext === 'webm' || ext === 'mp4';
-
-                var element = undefined;
-                if (isVideo) {
-                    element = document.createElement('video');
-                    element.autoplay = true;
-                    options.filtering = 'nearest';
-                    // element.preload = 'auto';
-                    // element.style.display = 'none';
-                    // document.body.appendChild(element);
-                } else {
-                    element = new Image();
-                }
-
-                element.onload = function () {
-                    try {
-                        _this.setElement(element, options);
-                    } catch (e) {
-                        console.log('Texture \'' + _this.name + '\': failed to load url: \'' + _this.source + '\'', e, options);
-                    }
-                    resolve(_this);
-                };
-                element.onerror = function (e) {
-                    // Warn and resolve on error
-                    console.log('Texture \'' + _this.name + '\': failed to load url: \'' + _this.source + '\'', e, options);
-                    resolve(_this);
-                };
-
-                // Safari has a bug loading data-URL elements with CORS enabled, so it must be disabled in that case
-                // https://bugs.webkit.org/show_bug.cgi?id=123978
-                if (!(isSafari() && _this.source.slice(0, 5) === 'data:')) {
-                    element.crossOrigin = 'anonymous';
-                }
-
-                element.src = _this.source;
-                if (isVideo) {
-                    _this.setElement(element, options);
-                }
-            });
-            return this.loading;
+            throw new Error('loading external urls not allowed');
         }
 
         // Sets texture to a raw image buffer
@@ -810,7 +589,7 @@ var Texture = function () {
     }, {
         key: 'setElement',
         value: function setElement(element, options) {
-            var _this2 = this;
+            var _this = this;
 
             var el = element;
 
@@ -825,8 +604,8 @@ var Texture = function () {
 
                 if (element instanceof HTMLVideoElement) {
                     element.addEventListener('canplaythrough', function () {
-                        _this2.intervalID = setInterval(function () {
-                            _this2.update(options);
+                        _this.intervalID = setInterval(function () {
+                            _this.update(options);
                         }, 15);
                     }, true);
                     element.addEventListener('ended', function () {
@@ -940,7 +719,6 @@ var Texture = function () {
     }]);
     return Texture;
 }();
-
 Texture.getMaxTextureSize = function (gl) {
     return gl.getParameter(gl.MAX_TEXTURE_SIZE);
 };
@@ -973,8 +751,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 var GlslCanvas = function () {
     function GlslCanvas(canvas, contextOptions, options) {
-        var _this = this;
-
         classCallCheck(this, GlslCanvas);
 
         subscribeMixin$1(this);
@@ -1028,9 +804,7 @@ var GlslCanvas = function () {
             this.fragmentString = canvas.getAttribute('data-fragment');
         } else if (canvas.hasAttribute('data-fragment-url')) {
             var source = canvas.getAttribute('data-fragment-url');
-            xhr.get(source, function (error, response, body) {
-                _this.load(body, _this.vertexString);
-            });
+            throw new Error('xhr Unsupported');
         }
 
         // Load shader
@@ -1038,9 +812,7 @@ var GlslCanvas = function () {
             this.vertexString = canvas.getAttribute('data-vertex');
         } else if (canvas.hasAttribute('data-vertex-url')) {
             var _source = canvas.getAttribute('data-vertex-url');
-            xhr.get(_source, function (error, response, body) {
-                _this.load(_this.fragmentString, body);
-            });
+            throw new Error('xhr Unsupported');
         }
 
         this.load();
@@ -1263,7 +1035,7 @@ var GlslCanvas = function () {
     }, {
         key: 'loadTexture',
         value: function loadTexture(name, urlElementOrData, options) {
-            var _this2 = this;
+            var _this = this;
 
             if (!options) {
                 options = {};
@@ -1283,13 +1055,13 @@ var GlslCanvas = function () {
                 if (this.textures[name]) {
                     this.textures[name].load(options);
                     this.textures[name].on('loaded', function (args) {
-                        _this2.forceRender = true;
+                        _this.forceRender = true;
                     });
                 }
             } else {
                 this.textures[name] = new Texture(this.gl, name, options);
                 this.textures[name].on('loaded', function (args) {
-                    _this2.forceRender = true;
+                    _this.forceRender = true;
                 });
             }
         }
@@ -1654,11 +1426,12 @@ var GlslCanvas = function () {
     }, {
         key: 'version',
         value: function version() {
-            return '0.1.7';
+            return '0.1.8';
         }
     }]);
     return GlslCanvas;
 }();
+
 
 function loadAllGlslCanvas() {
     var list = document.getElementsByClassName('glslCanvas');
